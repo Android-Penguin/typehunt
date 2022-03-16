@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L E T T E R S</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="img-container">
+        <!-- Images added by script -->
+    </div>
+
+
+    <script src="https://dl.dropboxusercontent.com/s/qszsljtea9qfjln/letter_photos.js"></script>
+    <!-- Shuffle and display images -->
+    <script>
+        // Misc variables
+        let loadedImages = 0;
+        let failedImages = 0;
+        const container = document.getElementById("img-container");
+
+
+        // ##########################
+        // # Step 1: Shuffle images #
+        // ##########################
+        function shuffle(array) {
+            let currentIndex = array.length;
+            let randomIndex;
+                
+            // While there remain elements to shuffle...
+            while (currentIndex != 0) {
+
+                // Pick a remaining element...
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+
+                // And swap it with the current element.
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            // console.log("array shuffled");
+            return array;
+        }
+
+        shuffle(letter_photos);
+        console.log(letter_photos);
+
+
+        // ##################################
+        // # Step 2: Add images to document #
+        // ##################################
+        for(item of letter_photos) {
+            // Create element
+            let img = document.createElement("img");
+            // Add source
+            img.src = item;
+            // Add onload
+            img.setAttribute("onload", "incrementLoad()");
+            // add onerror
+            img.setAttribute("onerror", "incrementFail(this)");
+            // Append to container
+            container.appendChild(img);
+        }
+
+
+        // ################################
+        // # Step 3: Detect loaded images #
+        // ################################
+        function incrementLoad() {
+            loadedImages++
+            // console.log(loadedImages);
+            if(loadedImages == letter_photos.length-failedImages) {
+                console.log("all loaded");
+                startSpawning();
+            }
+        }
+        function incrementFail(failedImage) {
+            failedImages++;
+            container.removeChild(failedImage);
+            console.log("failed");
+            if(loadedImages == letter_photos.length-failedImages) {
+                console.log("all loaded");
+                startSpawning();
+            }
+        }
+        
+        // ########################
+        // # Step 4: Spawn images #
+        // ########################
+        var elements;
+        var randomOrder = [];
+        function startSpawning() {
+            elements = document.getElementsByTagName("img");
+            console.log(elements);
+            // Create array for randomizing spawn order
+            for (let i=0; i<elements.length; i++) {
+                randomOrder.push(i);
+            }
+            // Shuffle order
+            shuffle(randomOrder);
+            
+            // Spawn images
+            spawnImage();
+
+        }
+
+        let spawnIndex = 0;
+        function spawnImage() {
+            setTimeout(() => {
+                // console.log(elements[randomOrder[spawnIndex]]);
+                elements[randomOrder[spawnIndex]].classList.add("spawned");
+                spawnIndex++;
+                if(spawnIndex < elements.length) {
+                    spawnImage();
+                }
+            }, 100);
+        }
+
+    </script>
+
+</body>
+</html>
